@@ -1,0 +1,14 @@
+{
+  "mappings": [
+    { "sheet": "Train Type", "cell": "B2", "field": "max_speed_kmh" },
+    { "sheet": "Train Type", "cell": "B3", "field": "traction_type" },
+    { "sheet": "Train Type", "cell": "B4", "field": "axle_load_tonnes" },
+    { "sheet": "Train Type", "cell": "B5", "field": "length_m" },
+    { "sheet": "Train Type", "cell": "B6", "field": "passenger_capacity" },
+    { "sheet": "Train Type", "cell": "B7", "field": "power_kw" },
+    { "sheet": "Train Type", "cell": "B8", "field": "braking_distance_m" },
+    { "sheet": "Train Type", "cell": "B9", "field": "bogies_count" },
+    { "sheet": "Train Type", "cell": "B10", "field": "gauge_mm" },
+    { "sheet": "Train Type", "cell": "B11", "field": "notes" }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "train_types": {
+    "generic": {
+      "max_speed_kmh": 160,
+      "traction_type": "Electric",
+      "axle_load_tonnes": 18.0,
+      "length_m": 200,
+      "passenger_capacity": 400,
+      "power_kw": 4000,
+      "braking_distance_m": 1200,
+      "bogies_count": 8,
+      "gauge_mm": 1435,
+      "notes": "Standard generic train type"
+    },
+    "light_diesel": {
+      "max_speed_kmh": 120,
+      "traction_type": "Diesel",
+      "axle_load_tonnes": 14.5,
+      "length_m": 80,
+      "passenger_capacity": 120,
+      "power_kw": 560,
+      "braking_distance_m": 700,
+      "bogies_count": 4,
+      "gauge_mm": 1435,
+      "notes": "Light regional diesel multiple unit"
+    },
+    "heavy_diesel": {
+      "max_speed_kmh": 140,
+      "traction_type": "Diesel",
+      "axle_load_tonnes": 22.0,
+      "length_m": 160,
+      "passenger_capacity": 280,
+      "power_kw": 1800,
+      "braking_distance_m": 1000,
+      "bogies_count": 8,
+      "gauge_mm": 1435,
+      "notes": "Heavy long-distance diesel locomotive-hauled set"
+    }
+  }
+}
