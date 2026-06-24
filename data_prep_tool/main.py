@@ -3,6 +3,7 @@ import os
 import tkinter as tk
 
 from app.config import APP_LOG_FILE, LOGS_DIR
+from app.runtime_assets import ensure_runtime_assets
 from app.repositories.sharepoint_repository import SharePointRepository
 from app.services.data_update_service import DataUpdateService
 from app.services.excel_generator import ExcelGenerator
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
+    ensure_runtime_assets()
     os.makedirs(LOGS_DIR, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,

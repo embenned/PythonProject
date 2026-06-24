@@ -136,28 +136,24 @@ no Python code changes are required.
 
 ## Building a standalone `.exe`
 
-```bash
-cd data_prep_tool
-pyinstaller --onefile --windowed \
-  --add-data "data;data" \
-  --add-data "templates;templates" \
-  --name TrainTypeDataPrepTool \
-  main.py
+```powershell
+.uild.ps1
 ```
 
-The resulting executable is at `dist/TrainTypeDataPrepTool.exe`.
+The resulting executable is at `dist\TrainTypeDataPrepTool.exe`.
 
 > **Important:** The `data/` and `templates/` directories are bundled inside the
-> `.exe` via `--add-data`. `config.py` uses `sys.executable` when frozen so all
-> paths resolve correctly at runtime.
+> `.exe` via `--add-data`. On first launch the app copies those defaults into a
+> writable runtime folder next to the executable, so `metadata.json` and logs
+> can be created safely.
 
-### One-liner for PowerShell
+If you want to run PyInstaller manually:
 
 ```powershell
-pyinstaller --onefile --windowed `
+pyinstaller --noconfirm --clean --onefile --windowed `
+  --name TrainTypeDataPrepTool `
   --add-data "data;data" `
   --add-data "templates;templates" `
-  --name TrainTypeDataPrepTool `
   main.py
 ```
 

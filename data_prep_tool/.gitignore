@@ -1,0 +1,7 @@
+build/
+dist/
+logs/
+__pycache__/
+*.spec
+*.log
+.pytest_cache/
