@@ -10,11 +10,13 @@ def _get_base_dir() -> str:
 BASE_DIR = _get_base_dir()
 
 DATA_DIR = os.path.join(BASE_DIR, "data")
+LOGS_DIR = os.path.join(BASE_DIR, "logs")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 TRAIN_TYPE_VALUES_FILE = os.path.join(DATA_DIR, "train_type_values.json")
 EXCEL_MAPPING_FILE = os.path.join(DATA_DIR, "excel_mapping.json")
 METADATA_FILE = os.path.join(DATA_DIR, "metadata.json")
+APP_LOG_FILE = os.path.join(LOGS_DIR, "app.log")
 
 TRAIN_TYPE_TEMPLATE_FILE = os.path.join(TEMPLATES_DIR, "train_type_template.xlsx")
 

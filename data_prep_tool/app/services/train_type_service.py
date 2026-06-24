@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from app.models.train_type import TrainTypeValues
+from app.models.train_type import DataValidationError, TrainTypeValues
 from app.repositories.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
@@ -19,14 +19,16 @@ class TrainTypeService:
 
     def get_available_train_types(self) -> list[str]:
         self._ensure_loaded()
-        return list(self._raw.get("train_types", {}).keys())
+        train_types = self._raw.get("train_types", {})
+        if not isinstance(train_types, dict):
+            raise DataValidationError("The top-level 'train_types' value must be an object.")
+        return list(train_types.keys())
 
     def get_train_type_values(self, train_type: str) -> TrainTypeValues:
         self._ensure_loaded()
         all_types: dict = self._raw.get("train_types", {})
+        if not isinstance(all_types, dict):
+            raise DataValidationError("The top-level 'train_types' value must be an object.")
         if train_type not in all_types:
             raise ValueError(f"Unknown train type: '{train_type}'")
-        return TrainTypeValues(
-            train_type=train_type,
-            values=all_types[train_type],
-        )
+        return TrainTypeValues.from_mapping(train_type, all_types[train_type])

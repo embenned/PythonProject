@@ -1,21 +1,27 @@
 import logging
+import os
 import tkinter as tk
 
-from app.config import SHAREPOINT_BASE_URL
+from app.config import APP_LOG_FILE, LOGS_DIR
 from app.repositories.sharepoint_repository import SharePointRepository
 from app.services.data_update_service import DataUpdateService
 from app.services.excel_generator import ExcelGenerator
 from app.services.train_type_service import TrainTypeService
 from app.ui.main_window import MainWindow
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
 logger = logging.getLogger(__name__)
 
 
 def main() -> None:
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(APP_LOG_FILE, encoding="utf-8"),
+        ],
+    )
     logger.info("Starting Train Type Data Preparation Tool.")
 
     repository = SharePointRepository()

@@ -1,12 +1,11 @@
 import logging
 import os
 import shutil
-from typing import Any
 
 import openpyxl
 
-from app.config import TRAIN_TYPE_TEMPLATE_FILE, EXCEL_MAPPING_FILE
-from app.models.train_type import TrainTypeValues
+from app.config import TRAIN_TYPE_TEMPLATE_FILE
+from app.models.train_type import DataValidationError, ExcelMappingEntry, TrainTypeValues
 from app.repositories.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
@@ -16,12 +15,15 @@ class ExcelGenerator:
 
     def __init__(self, repository: BaseRepository) -> None:
         self._repository = repository
-        self._mapping: list[dict[str, Any]] | None = None
+        self._mapping: list[ExcelMappingEntry] | None = None
 
     def _ensure_mapping_loaded(self) -> None:
         if self._mapping is None:
             raw = self._repository.load_excel_mapping()
-            self._mapping = raw.get("mappings", [])
+            mappings = raw.get("mappings", [])
+            if not isinstance(mappings, list):
+                raise DataValidationError("The top-level 'mappings' value must be a list.")
+            self._mapping = [ExcelMappingEntry.from_mapping(entry) for entry in mappings]
 
     def generate(self, train_type_values: TrainTypeValues, output_path: str) -> None:
         self._ensure_mapping_loaded()
@@ -41,28 +43,24 @@ class ExcelGenerator:
         wb = openpyxl.load_workbook(output_path)
 
         for entry in self._mapping:
-            sheet_name: str = entry.get("sheet", "")
-            cell: str = entry.get("cell", "")
-            field_key: str = entry.get("field", "")
-
-            if sheet_name not in wb.sheetnames:
-                logger.warning("Sheet '%s' not found in template — skipping.", sheet_name)
+            if entry.sheet not in wb.sheetnames:
+                logger.warning("Sheet '%s' not found in template — skipping.", entry.sheet)
                 continue
 
-            ws = wb[sheet_name]
-            value = train_type_values.get_value(field_key)
+            ws = wb[entry.sheet]
+            value = train_type_values.get_value(entry.field)
             if value is None:
                 logger.warning(
                     "No value for field '%s' (train type '%s') — cell %s!%s left unchanged.",
-                    field_key,
+                    entry.field,
                     train_type_values.train_type,
-                    sheet_name,
-                    cell,
+                    entry.sheet,
+                    entry.cell,
                 )
                 continue
 
-            ws[cell] = value
-            logger.debug("Wrote %s -> %s!%s", field_key, sheet_name, cell)
+            ws[entry.cell] = value
+            logger.debug("Wrote %s -> %s!%s", entry.field, entry.sheet, entry.cell)
 
         wb.save(output_path)
         logger.info("Excel file saved: %s", output_path)

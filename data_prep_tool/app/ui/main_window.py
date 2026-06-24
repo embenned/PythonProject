@@ -3,6 +3,8 @@ import os
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
+from app.models.train_type import DataValidationError
+
 logger = logging.getLogger(__name__)
 
 _STATUS_IDLE = ""
@@ -110,9 +112,14 @@ class MainWindow:
             filename = os.path.basename(output_path)
             self._set_status(f"Success! File saved: {filename}", success=True)
             logger.info("Generated Excel for '%s' at '%s'.", train_type, output_path)
+        except DataValidationError as exc:
+            logger.warning("Validation error during generation: %s", exc)
+            self._set_status(f"Validation error: {exc}", success=False)
+            messagebox.showerror("Invalid data", str(exc))
         except Exception as exc:
             logger.exception("Excel generation failed.")
             self._set_status(f"Error: {exc}", success=False)
+            messagebox.showerror("Generation failed", str(exc))
         finally:
             self._generate_btn.configure(state="normal")
 
