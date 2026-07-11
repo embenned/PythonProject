@@ -4,7 +4,12 @@ A Windows desktop application that generates a lean Excel file containing
 **only the "Train Type" sheet**, pre-filled with values for a selected train type.
 The output is intended to be copied manually into a large existing Excel workbook.
 
+The application also includes a local workbook comparison feature that compares
+a project workbook against a standard workbook and generates a deviation report.
+
 > **The application never reads, opens, or modifies any user Excel files.**
+> The Train Type generator still works on its own template copy, while the new
+> comparison feature reads user-selected workbooks locally only.
 
 ---
 
@@ -132,6 +137,37 @@ Maps each field name to a specific sheet and cell in the template:
 To change where a value is written in the Excel output, edit this file —
 no Python code changes are required.
 
+## Compare Workbook Against Standard
+
+The application now includes a second tab for deterministic workbook comparison.
+
+### Inputs
+
+- Standard Workbook (`.xlsm`)
+- Project Workbook (`.xlsm`)
+
+### Output
+
+- `Workbook_Deviations.xlsx`
+- Worksheet: `List of Project Deviations`
+- Columns: `Change No`, `Change Type`, `Sheet Name`, `Cell Address`, `Standard Value`, `Project Value`
+
+### Comparison rules
+
+- Compares values only.
+- Ignores formatting, macros, VBA, colors, borders, comments, row heights, column widths, and workbook metadata.
+- Skips sheets `Cockpit`, `Revision history`, `Verify_Import_XML`, and `Passive Rules Check`.
+- Treats whitespace-trimmed strings and empty values consistently.
+- Supports password-protected workbooks using `IDDP_Protection_842` when needed.
+
+The report is saved next to the selected Project Workbook.
+
+### Preview workflow
+
+After the comparison finishes, the app shows a preview of the first deviations
+and the overall deviation counts. The user then confirms whether to save the
+report and chooses the output path.
+
 ---
 
 ## Building a standalone `.exe`
@@ -157,6 +193,11 @@ pyinstaller --noconfirm --clean --onefile --windowed `
   main.py
 ```
 
+The comparison feature requires the optional `msoffcrypto-tool` dependency so
+password-protected workbooks can be opened locally when needed.
+
+Application logging is written to `application.log` in the application folder.
+
 ---
 
 ## How it works
@@ -166,10 +207,20 @@ pyinstaller --noconfirm --clean --onefile --windowed `
 2. If SharePoint is unavailable (network error, timeout, wrong URL), it falls
    back to the local copies in `/data` and logs a warning.
 3. The user selects a train type from the dropdown and clicks **Generate Excel**.
-4. A Save dialog asks where to write the output file.
+4. A Save dialog asks where to write the output file (default name: `Train type.xlsx`).
 5. The app copies the template, writes the mapped values into the copy, and saves it.
 6. The original template is never touched.
 7. A log entry is appended to `data/metadata.json`.
+
+### Mapping modes
+
+The app supports two ways to map values into the workbook:
+
+1. `mappings` list: explicit `sheet + cell + field` entries.
+2. `parameter_column_mapping`: lookup by parameter name column (for large Train Type sheets).
+
+Current configuration uses `parameter_column_mapping` and writes values by matching
+JSON keys against parameter names in column `D` and writing to column `E`.
 
 ---
 

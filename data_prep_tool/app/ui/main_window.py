@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from app.models.train_type import DataValidationError
+from app.ui.compare_tab import CompareTab
 
 logger = logging.getLogger(__name__)
 
@@ -36,19 +37,25 @@ class MainWindow:
 
     def _build_ui(self) -> None:
         self._root.title("Train Type Data Preparation Tool")
-        self._root.resizable(False, False)
-        self._root.minsize(420, 200)
+        self._root.resizable(True, True)
+        self._root.minsize(980, 640)
 
-        frame = ttk.Frame(self._root, padding=20)
-        frame.grid(row=0, column=0, sticky="nsew")
+        notebook = ttk.Notebook(self._root)
+        notebook.pack(fill="both", expand=True)
+
+        generate_frame = ttk.Frame(notebook, padding=20)
+        compare_frame = ttk.Frame(notebook, padding=20)
+        notebook.add(generate_frame, text="Generate Train Type")
+        notebook.add(compare_frame, text="Compare Workbook")
+
         self._root.columnconfigure(0, weight=1)
         self._root.rowconfigure(0, weight=1)
 
-        ttk.Label(frame, text="Select Train Type:").grid(
+        ttk.Label(generate_frame, text="Select Train Type:").grid(
             row=0, column=0, sticky="w", pady=(0, 4)
         )
         self._combo = ttk.Combobox(
-            frame,
+            generate_frame,
             textvariable=self._selected_train_type,
             state="readonly",
             width=35,
@@ -56,14 +63,14 @@ class MainWindow:
         self._combo.grid(row=1, column=0, sticky="ew", pady=(0, 16))
 
         self._generate_btn = ttk.Button(
-            frame,
+            generate_frame,
             text="Generate Excel",
             command=self._on_generate,
         )
         self._generate_btn.grid(row=2, column=0, sticky="ew", pady=(0, 12))
 
         self._status_label = tk.Label(
-            frame,
+            generate_frame,
             textvariable=self._status_text,
             wraplength=380,
             justify="left",
@@ -71,7 +78,9 @@ class MainWindow:
             bg=self._root.cget("bg"),
         )
         self._status_label.grid(row=3, column=0, sticky="ew")
-        frame.columnconfigure(0, weight=1)
+        generate_frame.columnconfigure(0, weight=1)
+
+        self._compare_tab = CompareTab(compare_frame)
 
     def _load_train_types(self) -> None:
         try:
@@ -95,7 +104,7 @@ class MainWindow:
             title="Save generated Excel file",
             defaultextension=".xlsx",
             filetypes=[("Excel files", "*.xlsx")],
-            initialfile=f"train_type_{train_type}.xlsx",
+            initialfile="Train type.xlsx",
         )
         if not output_path:
             self._set_status("Generation cancelled.", success=None)

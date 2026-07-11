@@ -26,7 +26,7 @@ RESOURCE_TEMPLATES_DIR = os.path.join(RESOURCE_DIR, "templates")
 TRAIN_TYPE_VALUES_FILE = os.path.join(DATA_DIR, "train_type_values.json")
 EXCEL_MAPPING_FILE = os.path.join(DATA_DIR, "excel_mapping.json")
 METADATA_FILE = os.path.join(DATA_DIR, "metadata.json")
-APP_LOG_FILE = os.path.join(LOGS_DIR, "app.log")
+APP_LOG_FILE = os.path.join(APP_DIR, "application.log")
 
 TRAIN_TYPE_TEMPLATE_FILE = os.path.join(TEMPLATES_DIR, "train_type_template.xlsx")
 
